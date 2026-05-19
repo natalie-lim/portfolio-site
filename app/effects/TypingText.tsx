@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export function useTypingEffect(text: string, speed = 80) {
   const [displayed, setDisplayed] = useState("");
@@ -23,39 +23,30 @@ type TypingTextProps = {
   color: string;
   speed?: number;
   className?: string;
+  completeDelay?: number;
+  onComplete?: () => void;
 };
 
-export function TypingText({ text, speed, color, className }: TypingTextProps) {
+export function TypingText({
+  text,
+  speed,
+  color,
+  className,
+  completeDelay = 500,
+  onComplete,
+}: TypingTextProps) {
   const displayed = useTypingEffect(text, speed);
-  const [mounted, setMounted] = useState(true);
-  const [fading, setFading] = useState(false);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
   useEffect(() => {
-    setMounted(true);
-    setFading(false);
     if (displayed !== text || text.length === 0) return;
 
-    const id = setTimeout(() => setFading(true), 500);
+    const id = setTimeout(() => onCompleteRef.current?.(), completeDelay);
     return () => clearTimeout(id);
-  }, [displayed, text]);
-
-  if (!mounted) return null;
+  }, [displayed, text, completeDelay]);
 
   return (
-    <p
-      className={[
-        color,
-        className,
-        "transition-opacity duration-300 ease-out",
-        fading ? "opacity-0" : "opacity-100",
-      ]
-        .filter(Boolean)
-        .join(" ")}
-      onTransitionEnd={(e) => {
-        if (fading && e.propertyName === "opacity") setMounted(false);
-      }}
-    >
-      {displayed}
-    </p>
+    <p className={[color, className].filter(Boolean).join(" ")}>{displayed}</p>
   );
 }
