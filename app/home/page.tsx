@@ -1,3 +1,5 @@
+import Brain from "../components/Brain";
+
 export default function HomePage() {
   return (
     <div className="flex flex-1 grid-cols-2 items-center justify-between m-36 bg-slate-950 font-sans text-white animate-[fade-in_0.5s_ease-out_forwards]">
@@ -8,7 +10,7 @@ export default function HomePage() {
         </p>
       </div>
       <div>
-        <p>insert brain here</p>
+        <Brain />
       </div>
     </div>
   );
